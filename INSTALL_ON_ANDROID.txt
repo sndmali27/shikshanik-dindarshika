@@ -1,0 +1,10 @@
+शैक्षणिक दिनदर्शिका — Android PWA स्थापना
+
+1) ही फाईल GitHub Pages / कोणत्याही HTTPS website वर upload करा.
+2) Chrome मध्ये त्या website ची URL उघडा.
+3) Chrome menu (⋮) → Add to Home screen / Install app निवडा.
+4) Install केल्यावर होम स्क्रीनवर 'शैक्षणिक दिनदर्शिका' icon दिसेल.
+5) पहिल्यांदा app उघडताना internet असू द्या, जेणेकरून offline files cache होतील.
+6) त्यानंतर calendar internet शिवायही चालेल.
+
+महत्त्वाचे: Android Chrome local file (file://) मधून PWA install करत नाही. PWA साठी HTTPS hosting आवश्यक आहे.

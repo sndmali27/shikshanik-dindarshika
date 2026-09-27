@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="mr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#7b1e1e"><link rel="manifest" href="manifest.json">
+<title>शैक्षणिक दिनदर्शिका २०२६–२७</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f6f1ea;color:#2d2723;font-family:system-ui,-apple-system,"Noto Sans Devanagari",sans-serif}
+header{background:#7b1e1e;color:#fff;padding:16px 14px 12px;position:sticky;top:0;z-index:5;box-shadow:0 2px 9px #0003}
+h1{font-size:20px;margin:0}.sub{font-size:11px;opacity:.86;margin-top:3px}.bar{display:flex;align-items:center;justify-content:space-between;margin-top:12px}
+button{font:inherit;border:0}.nav{background:#ffffff20;color:#fff;border-radius:10px;padding:5px 14px;font-size:24px}.month{font-weight:750;font-size:17px}
+.wrap{max-width:720px;margin:auto;padding:11px}.card{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 10px #0001;margin-bottom:12px}
+.week,.grid{display:grid;grid-template-columns:repeat(7,1fr)}.week div{text-align:center;padding:8px 1px;color:#776d66;font-size:11px;font-weight:700}
+.day{min-height:62px;border-top:1px solid #eee;padding:5px 2px;text-align:center;cursor:pointer;position:relative}.day b{font-size:14px}.muted{color:#c6c1bd}
+.today{background:#fff0cf}.selected{outline:2px solid #b66a29;outline-offset:-2px;border-radius:7px}.holiday b{color:#a51d1d}
+.dot{width:5px;height:5px;background:#b66a29;border-radius:50%;margin:3px auto 0}.sun b{color:#a51d1d}
+.event{padding:15px}.event h2{font-size:17px;margin:0 0 9px}.item{padding:9px 0;border-bottom:1px solid #eee}.tag{display:inline-block;font-size:10px;padding:3px 7px;border-radius:15px;background:#f1e2d4;color:#7b1e1e;margin-right:5px}
+.stats{padding:12px 14px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stat{background:#faf6f1;border-radius:11px;padding:10px 5px;text-align:center}.stat b{display:block;font-size:18px;color:#7b1e1e}.stat span{font-size:10px;color:#766c65}
+.actions{display:flex;gap:8px;padding:12px 14px}.action{flex:1;background:#f1e6dc;color:#7b1e1e;border-radius:10px;padding:10px;font-size:13px;font-weight:650}
+.legend{padding:9px 14px;font-size:10px;color:#756b64;border-top:1px solid #eee}.fab{position:fixed;right:16px;bottom:17px;width:54px;height:54px;border-radius:50%;background:#7b1e1e;color:#fff;font-size:21px;box-shadow:0 4px 14px #0003}
+@media(min-width:600px){.day{min-height:78px}}
+</style></head>
+<body>
+<header><h1>📚 शैक्षणिक दिनदर्शिका</h1><div class="sub">माध्यमिक शिक्षण विभाग • जिल्हा परिषद, नंदुरबार • २०२६–२७</div>
+<div class="bar"><button class="nav" onclick="move(-1)">‹</button><div class="month" id="month"></div><button class="nav" onclick="move(1)">›</button></div></header>
+<main class="wrap">
+<section class="card"><div class="week"><div>रवि</div><div>सोम</div><div>मंगळ</div><div>बुध</div><div>गुरु</div><div>शुक्र</div><div>शनि</div></div><div class="grid" id="cal"></div>
+<div class="legend">🔴 सुट्टी/विशेष दिवस • 🟤 नोंद असलेला दिवस • पिवळा = आज</div></section>
+<section class="card event" id="details"></section>
+<section class="card"><div class="stats"><div class="stat"><b>२३७</b><span>कामकाजाचे दिवस</span></div><div class="stat"><b>७६</b><span>रविवार वगळता सुट्ट्या</span></div><div class="stat"><b>१२८</b><span>वर्षातील एकूण सुट्टी</span></div></div>
+<div class="actions"><button class="action" onclick="goToday()">📍 आज</button><button class="action" onclick="showYear()">📊 वर्षाचा आढावा</button></div></section>
+<section class="card event" id="year" style="display:none"></section>
+</main><button class="fab" onclick="goToday()">⌂</button>
+<script>
+const events=[{"date": "2026-06-26", "title": "मोहरम", "type": "सुट्टी"}, {"date": "2026-07-25", "title": "आषाढी एकादशी", "type": "सुट्टी"}, {"date": "2026-08-15", "title": "स्वातंत्र्य दिन / पारशी नववर्ष", "type": "सुट्टी"}, {"date": "2026-08-26", "title": "ईद-ए-मिलाद", "type": "सुट्टी"}, {"date": "2026-08-28", "title": "रक्षाबंधन", "type": "सुट्टी"}, {"date": "2026-09-10", "title": "पोळा", "type": "सुट्टी"}, {"date": "2026-09-14", "title": "गणेश चतुर्थी", "type": "सुट्टी"}, {"date": "2026-09-25", "title": "अनंत चतुर्दशी", "type": "सुट्टी"}, {"date": "2026-10-02", "title": "महात्मा गांधी जयंती", "type": "राष्ट्रीय दिवस"}, {"date": "2026-10-20", "title": "दसरा", "type": "सुट्टी"}, {"date": "2026-11-05", "title": "दिवाळी सुट्टी — प्रारंभ", "type": "सुट्टीचा कालावधी"}, {"date": "2026-11-17", "title": "दिवाळी सुट्टी — समाप्त", "type": "सुट्टीचा कालावधी"}, {"date": "2026-11-24", "title": "गुरुनानक जयंती", "type": "सुट्टी"}, {"date": "2026-12-23", "title": "श्री दत्त जयंती", "type": "सुट्टी"}, {"date": "2026-12-25", "title": "नाताळ", "type": "सुट्टी"}, {"date": "2027-01-06", "title": "शब-ए-मेराज", "type": "सुट्टी"}, {"date": "2027-01-15", "title": "मकर संक्रांत", "type": "सुट्टी"}, {"date": "2027-01-25", "title": "शब-ए-बारात", "type": "सुट्टी"}, {"date": "2027-01-26", "title": "प्रजासत्ताक दिन", "type": "राष्ट्रीय दिवस"}, {"date": "2027-02-19", "title": "छत्रपती शिवाजी महाराज जयंती", "type": "सुट्टी"}, {"date": "2027-03-06", "title": "महाशिवरात्री / शब-ए-मेराज", "type": "सुट्टी"}, {"date": "2027-03-10", "title": "रमजान ईद", "type": "सुट्टी"}, {"date": "2027-03-11", "title": "रमजान ईद विशेष सुट्टी", "type": "विशेष सुट्टी"}, {"date": "2027-03-12", "title": "रमजान ईद विशेष सुट्टी", "type": "विशेष सुट्टी"}, {"date": "2027-03-22", "title": "होळी", "type": "सुट्टी"}, {"date": "2027-03-23", "title": "धुलिवंदन", "type": "सुट्टी"}, {"date": "2027-03-26", "title": "गुड फ्रायडे", "type": "सुट्टी"}, {"date": "2027-04-07", "title": "गुढी पाडवा", "type": "सुट्टी"}, {"date": "2027-04-14", "title": "डॉ. बाबासाहेब आंबेडकर जयंती", "type": "राष्ट्रीय दिवस"}, {"date": "2027-04-15", "title": "श्रीराम नवमी", "type": "सुट्टी"}, {"date": "2027-04-19", "title": "भगवान महावीर जयंती", "type": "सुट्टी"}, {"date": "2027-05-01", "title": "महाराष्ट्र दिन", "type": "राष्ट्रीय/राज्य दिवस"}, {"date": "2027-05-02", "title": "उन्हाळी सुट्टी — प्रारंभ", "type": "सुट्टीचा कालावधी"}, {"date": "2027-06-14", "title": "उन्हाळी सुट्टी — समाप्त", "type": "सुट्टीचा कालावधी"}];const map={};events.forEach(e=>(map[e.date]??=[]).push(e));
+let cur=new Date(2026,8,1), selected=new Date();
+function key(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function fmt(d){return new Intl.DateTimeFormat("mr-IN",{month:"long",year:"numeric"}).format(d)}
+function render(){let y=cur.getFullYear(),m=cur.getMonth(),first=new Date(y,m,1),last=new Date(y,m+1,0);document.getElementById("month").textContent=fmt(cur);
+let h="";for(let i=0;i<first.getDay();i++)h+='<div class="day muted"></div>';
+for(let d=1;d<=last.getDate();d++){let dt=new Date(y,m,d),k=key(dt),ev=map[k]||[],sun=dt.getDay()==0;h+=`<div class="day ${key(new Date())==k?"today ":""}${key(selected)==k?"selected ":""}${ev.length?"holiday ":""}${sun?"sun":""}" onclick="pick(${d})"><b>${d}</b>${ev.length?'<div class="dot"></div>':''}</div>`}
+document.getElementById("cal").innerHTML=h;showDetails(selected)}
+function pick(d){selected=new Date(cur.getFullYear(),cur.getMonth(),d);render()}
+function showDetails(d){let ev=map[key(d)]||[],title=new Intl.DateTimeFormat("mr-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric"}).format(d);document.getElementById("details").innerHTML="<h2>"+title+"</h2>"+(ev.length?ev.map(e=>`<div class="item"><span class="tag">${e.type}</span>${e.title}</div>`).join(""):'<div style="color:#777">या दिवसासाठी नोंद उपलब्ध नाही. शाळेचा नियमित कामकाजाचा दिवस.</div>')}
+function move(n){cur=new Date(cur.getFullYear(),cur.getMonth()+n,1);selected=new Date(cur);render()}
+function goToday(){let d=new Date();cur=new Date(d.getFullYear(),d.getMonth(),1);selected=d;render()}
+function showYear(){let y=document.getElementById("year");y.style.display="block";y.innerHTML='<h2>२०२६–२७ वार्षिक आढावा</h2><div class="item">📚 कामकाजाचे दिवस: <b>२३७</b></div><div class="item">🏖️ उन्हाळी सुट्टी: <b>२ मे ते १४ जून २०२७</b></div><div class="item">🪔 दिवाळी सुट्टी: <b>५ ते १७ नोव्हेंबर २०२६</b></div><div class="item">📌 स्रोत: जिल्हा परिषद, नंदुरबार — माध्यमिक शिक्षण विभागाचा दिलेला २०२६–२७ सुट्टी तक्ता.</div>';y.scrollIntoView({behavior:"smooth"})}
+if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js");render();
+</script></body></html>
